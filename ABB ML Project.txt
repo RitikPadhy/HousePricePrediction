@@ -1,0 +1,84 @@
+ABB ML Project
+
+Business Problem
+-There are total of four files in the dataset: train.csv(training set), test.csv(testing set), data_description.txt(description about the dataset
+and columns of the dataset) and sample_submission.csv(submission must be made in this format). The columns of the dataset is present in the data
+fields. We open the train.csv and we see that there are 81 columns and 1460 entries/rows. SalesPrice is the target/dependent variable which is 
+evaluated from the independent variables. We have to build a regression ML model and predict the sales price of the house. We will be using only
+the train.csv file. 
+
+Data Preprocessing-1
+-We will be doing our project on Google-Colab Notebook, Python 3 Google Compute Engine backend. Our dataset link is provided. We import our 
+packages. numpy is to deal with arrays. pandas is to deal with the dataset. matplotlib and seaborn are data visualisation libraries. Then we upload
+and read our dataset into our project. 
+-Data exploration: We explore and get to know more about the data. dataset.head() reads the first few lines of the dataset. dataset.shape gives 
+the number of rows/observations(1460) and columns of the dataset(81). dataset.columns gives us the names of the columns. dataset.info() gives us 
+the information about the name of the column, number of non-null values in each column and the datatype of each column. There are three datatypes:
+int64, float64 and object. object is for categorical data or in a way are strings. dataset.describe() gives us the stastical summary of the 
+non-object columns in the dataset. Stastical summary involve min, max, mean, standard deviation, 25%, 50%, 75% and count(number of non-null values).
+We check for the number of numerical columns(38), columns with int64 and float64 as datatypes. Then, we check for categorical columns(43). 
+-We check for null values by writing two command and we see there are 6965 null values. We also see the number of null values in each column. Then,
+the names and number(19) of all columns which have null values. We also make use of the heatmap to see the null values. Wherever there is a line, it
+means it is a null, and through which we can get to know about the number of null values for each column. We calculate the percent of null values 
+occuping every column. cols_to_drop checks for the columns which have null values more than 50%. Then, we proceed to drop these columns. We
+notice there are 15 columns available only now. 
+-Out of the 15 columns, 3 are numerical columns. And, we add each element in every numerical column with their resepective column means, in order 
+to make it non-null. Element=Element+Mean of respective column. Now these numerical columns do not have any null values anymore.
+-Now, we work with the categorical columns(12) by getting all of them. We add the mode of each column to each value of that categorical column. 
+mode is the category which is repeated the most. [0] at the end means mode value is 0 by default.
+-At the end, once all the null values have become non-null, we see dataset.isnull().values.any() returns false indicating there are no null 
+values present anymore.
+
+Data Preprocessing-2
+-We work on plotting the distplot. The skewness tells us to take the values up to two decimals. On observing the distplot, we see that most of the
+salesprice is concentrated around the 2 lakhs, and with the help of skewness we can get the probablity distribution. 
+-We evaluate the correlation matrix by giving the height and width of the plot, and also giving the grid true in order to keep a grid present. The 
+matrix gives the postive or negative correlation of the target variable SalesPrice with all the other variables. 
+-We plot the heatmap for the data with the possible height and width. cmap='coolwarm' means the color of the plot. Darker the box present in the 
+plot means greater is the positive correlation between the variables.
+-high_corr holds the values of the each column with every other column's correlation value. high_corr_features holds the all those columns whose
+correlation with SalePrice is greater than 0.5. Then, we can see the heatmap for the high_corr_features values/columns.
+-Now, we deal with categorical values. First we encode these columns. get_dummies basically divides each column into smaller variables/columns 
+which hold a value. Now, if the row has that smaller's variable value in it, it return true otherwise false. drop_first basically keep the first 
+column with all true values. So now the categorical columns are broken into smaller column which hold a true or false value. 
+-Splitting the data into the training and testing dataset using train_test_split. y is the target variable and x is the independent variables. 
+test_set receives the 20% of the dataset while the 80% goes to the training set. random_state=0 means every time we run this command we get the
+same training and testing set. Then, we see the rows and columns of x_train, y_train, x_test and y_test. 
+-Now, we perform standard scaling on the data present with the help of StandardScaler. We use fit_transform from this class on the training set
+because we have to fit the data into the model and then also transform it. Whereas we use transform on the testing set because we have to only 
+transform the values and not to fit into the model to train it. We see the values are now between +3 and -3. The transformation is done based on 
+this formula z = (x - u) / s, where u is the mean of the training samples, s is the standard deviation of the training samples, x is the sample
+score and z is the new sample score.
+
+Building and Finalizing the Model
+-Our first ML model is multiple linear regression which is performed with the help of LinearRegression. Then, second model is Random Forest 
+regessor done with the help of RandomForestRegressor. And the third one is XGBoost Regression, done with the help of XGBRFRegressor. All three 
+of the models are first used to train x and then are used to predict the y value. r2_score also known as regression score function helps us 
+determine which model is the best. At the end we see the RandomForestRegressor is the best way to go.
+-LinearRegression fits a linear model with coefficients w = (w1, …, wp) to minimize the residual sum of squares between the observed targets
+ in the dataset, and the targets predicted by the linear approximation. They help us reduce the error as much as possible.
+-A random forest is a meta estimator that fits a number of classifying decision trees on various sub-samples of the dataset and uses averaging
+ to improve the predictive accuracy and control over-fitting.
+-XGBoost is normally used to train gradient-boosted decision trees. The XGBoost library allows the models to be trained in a way that 
+repurposes and harnesses the computational efficiencies implemented in the library for training random forest models.
+
+HyperParameter Tuning 
+-Hyperparameters are those variables which control the training process, whereas parameters help in the decision making process.
+-In GridSearchCV, all the parameters values are tried out whereas in RandomizedSearchCV, not all parameter values are tried out, due to which 
+RandomizedSearchCV takes lesser time than GridSearchCV. We fill in the parameters along with the test values for the RandomizedSearchCV. We
+create an instance of RandomizedSearchCV called random_cv which takes the random forest, parameters, does 50 iterations, performs a 5-fold 
+splitting strategy, the computation time for each fold and parameter candidate is displayed, -1 means use all processors and we use the same
+training and testing set every time. 
+-Then we fit out model along with the testing and training set. random_cv.best_estimator_ tells us the values of Hyperparameters to 
+use to get the best performance. random_cv.best_params_ tells only about the values to be used in the param_distribution in order to achieve the
+max performance.
+
+Final Model
+-We take the values of the parameters and put it in arguments of RandomForestRegressor. Find out the results for all possible models.
+
+Multiple Linear regression - -3.5400367536523465e+21(Bad)
+Random Forest regression - 0.8376015978488316(Best)
+XGBoost Regression - 0.8114231361056368(Second best)
+Therefore, we choose Random Forest regression. After HyperParameter Tuning, we get:
+Improved Random Forest regression - 0.8428475362748599
+
